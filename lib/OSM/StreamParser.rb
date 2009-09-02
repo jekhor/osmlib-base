@@ -131,6 +131,7 @@ module OSM
         private
 
         def _start_osm(attr_hash)
+            @context = nil
             if attr_hash['version'] != '0.5' && attr_hash['version'] != '0.6'
                 raise OSM::VersionError, 'OSM::StreamParser only understands OSM file version 0.5 and 0.6'
             end
@@ -142,6 +143,7 @@ module OSM
 
         def _end_node()
             @db << @context if node(@context) && ! @db.nil?
+            @context = nil
         end
 
         def _start_way(attr_hash)
@@ -150,6 +152,7 @@ module OSM
 
         def _end_way()
             @db << @context if way(@context) && ! @db.nil?
+            @context = nil
         end
 
         def _start_relation(attr_hash)
@@ -158,6 +161,7 @@ module OSM
 
         def _end_relation()
             @db << @context if relation(@context) && ! @db.nil?
+            @context = nil
         end
 
         def _nd(attr_hash)
@@ -165,6 +169,7 @@ module OSM
         end
 
         def _tag(attr_hash)
+            return if @context == nil
             if respond_to?(:tag)
                 return unless tag(@context, attr_hash['k'], attr_value['v'])
             end
