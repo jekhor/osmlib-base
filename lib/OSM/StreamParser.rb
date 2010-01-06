@@ -138,7 +138,7 @@ module OSM
         end
 
         def _start_node(attr_hash)
-            @context = OSM::Node.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'], attr_hash['lon'], attr_hash['lat'])
+            @context = OSM::Node.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'], attr_hash['lon'], attr_hash['lat'], attr_hash['uid'], attr_hash['version'])
         end
 
         def _end_node()
@@ -147,7 +147,7 @@ module OSM
         end
 
         def _start_way(attr_hash)
-            @context = OSM::Way.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'])
+            @context = OSM::Way.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'], [], attr_hash['uid'], attr_hash['version'])
         end
 
         def _end_way()
@@ -156,7 +156,7 @@ module OSM
         end
 
         def _start_relation(attr_hash)
-            @context = OSM::Relation.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'])
+            @context = OSM::Relation.new(attr_hash['id'], attr_hash['user'], attr_hash['timestamp'], [], attr_hash['uid'], attr_hash['version'])
         end
 
         def _end_relation()

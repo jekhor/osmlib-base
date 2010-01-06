@@ -51,6 +51,8 @@ module OSM
         # API 0.6 and above only
         attr_accessor :uid
 
+        attr_accessor :action
+
         # Last change of this object (as read from file, it is not
         # updated by operations to this object)
         attr_reader :timestamp
@@ -75,6 +77,7 @@ module OSM
             @uid = uid
             @user = user
             @timestamp = _check_timestamp(timestamp) unless timestamp.nil?
+            @action = nil
             @db = nil
             @tags = Tags.new
         end
@@ -92,7 +95,7 @@ module OSM
 
         # The list of attributes for this object
         def attribute_list # :nodoc:
-            [:id, :version, :uid, :user, :timestamp]
+            [:id, :version, :uid, :user, :timestamp, :action]
         end
 
         # Returns a hash of all non-nil attributes of this object.
@@ -315,7 +318,7 @@ module OSM
 
         # List of attributes for a Node
         def attribute_list
-            [:id, :version, :uid, :user, :timestamp, :lon, :lat]
+            [:id, :version, :uid, :user, :timestamp, :lon, :lat, :action]
         end
 
         # Add one or more tags to this node.

@@ -69,12 +69,24 @@ module OSM
             list[0]
         end
 
+        # Get a full object with specified ID from API
+        #
+        # call-seq: get_full_object(type, id) -> Array
+        #
+        def get_full_object(type, id)
+            api_call(id, "#{type}/#{id}/full")
+        end
+
         # Get a node with specified ID from API.
         #
         # call-seq: get_node(id) -> OSM::Node
         #
         def get_node(id)
             get_object('node', id)
+        end
+
+        def get_full_node(id)
+            get_full_object('node', id)
         end
 
         # Get a way with specified ID from API.
@@ -85,6 +97,10 @@ module OSM
             get_object('way', id)
         end
 
+        def get_full_way(id)
+            get_full_object('way', id)
+        end
+
         # Get a relation with specified ID from API.
         #
         # call-seq: get_node(id) -> OSM::Relation
@@ -93,6 +109,9 @@ module OSM
             get_object('relation', id)
         end
 
+        def get_full_relation(id)
+            get_full_object('relation', id)
+        end
         # Get all ways using the node with specified ID from API.
         #
         # call-seq: get_ways_using_node(id) -> Array of OSM::Way
@@ -153,6 +172,7 @@ module OSM
         def get(suffix)
             uri = URI.parse(@base_uri + suffix)
             request = Net::HTTP.new(uri.host, uri.port)
+            request.read_timeout = nil
             request.get(uri.request_uri)
         end
 
