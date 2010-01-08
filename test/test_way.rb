@@ -1,4 +1,4 @@
-$: << 'lib'
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'objects')
 require 'test/unit'
 
@@ -7,6 +7,7 @@ class TestWay < Test::Unit::TestCase
     def test_create
         way = OSM::Way.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 5)
         assert_kind_of OSM::Way, way
+        assert_equal 'way', way.type
         assert_equal 123, way.id
         assert_equal 'somebody', way.user
         assert_equal '2007-02-20T10:29:49+00:00', way.timestamp

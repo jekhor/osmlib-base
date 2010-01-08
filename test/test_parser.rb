@@ -1,4 +1,4 @@
-$: << 'lib'
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'StreamParser')
 require 'test/unit'
 require 'rubygems'

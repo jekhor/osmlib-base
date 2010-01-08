@@ -1,4 +1,4 @@
-$: << 'lib'
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'objects')
 require 'test/unit'
 
@@ -7,6 +7,7 @@ class TestRelation < Test::Unit::TestCase
     def test_create
         relation = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 5)
         assert_kind_of OSM::Relation, relation
+        assert_equal 'relation', relation.type
         assert_equal 123, relation.id
         assert_equal 'somebody', relation.user
         assert_equal '2007-02-20T10:29:49+00:00', relation.timestamp
@@ -18,6 +19,37 @@ class TestRelation < Test::Unit::TestCase
 
         hash = {:id => 123, :version => 5, :uid => 3, :user => 'somebody', :timestamp => '2007-02-20T10:29:49+00:00'}
         assert_equal hash, relation.attributes
+    end
+
+    def test_equality
+        relation1 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 5)
+        relation2 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 5)
+        relation3 = OSM::Relation.new(124, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 5)
+        relation4 = OSM::Relation.new(123, 'somebode', '2007-02-20T10:29:49+00:00', [], 3, 5)
+        relation5 = OSM::Relation.new(123, 'somebody', '2008-02-20T10:29:49+00:00', [], 3, 5)
+        relation6 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 4, 5)
+        relation7 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [], 3, 6)
+
+        member1 = OSM::Member.new('node', 17, 'foo')
+        member2 = OSM::Member.new('node', 18, 'foo')
+        relation8 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [member1, member2], 3, 5)
+        member3 = OSM::Member.new('node', 17, 'foo')
+        member4 = OSM::Member.new('node', 18, 'foo')
+        relation9 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [member3, member4], 3, 5)
+        member5 = OSM::Member.new('way', 17, 'foo')
+        relation10 = OSM::Relation.new(123, 'somebody', '2007-02-20T10:29:49+00:00', [member1, member2, member5], 3, 5)
+
+        assert_equal relation1, relation2
+        assert_equal relation8, relation9
+
+        assert_not_equal relation1, relation3
+        assert_not_equal relation1, relation4
+        assert_not_equal relation1, relation5
+        assert_not_equal relation1, relation6
+        assert_not_equal relation1, relation7
+        assert_not_equal relation1, relation8
+        assert_not_equal relation8, relation10
+
     end
 
     def test_init_id

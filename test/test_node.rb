@@ -1,4 +1,4 @@
-$: << 'lib'
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'objects')
 require 'test/unit'
 
@@ -7,6 +7,7 @@ class TestNode < Test::Unit::TestCase
     def test_create
         node = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
         assert_kind_of OSM::Node, node
+        assert_equal 'node', node.type
         assert_equal 17, node.id
         assert_equal 'somebody', node.user
         assert_equal '2007-02-20T10:29:49+00:00', node.timestamp
@@ -18,6 +19,56 @@ class TestNode < Test::Unit::TestCase
 
         hash = {:id => 17, :version => 3, :uid => 5, :user => 'somebody', :timestamp => '2007-02-20T10:29:49+00:00', :lon => '8.5', :lat => '47.5'}
         assert_equal hash, node.attributes
+    end
+
+    def test_equality
+        nodes = Array.new
+        nodes[0] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[0].tags['tourism'] = 'hotel'
+        
+        nodes[1] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[1].tags['tourism'] = 'hotel'
+        
+        nodes[2] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[2].action = 'modify'
+
+        nodes[3] = OSM::Node.new(18, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[3].tags['tourism'] = 'hotel'
+       
+        nodes[4] = OSM::Node.new(17, 'somebod', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[4].tags['tourism'] = 'hotel'
+
+        nodes[5] = OSM::Node.new(17, 'somebody', '2008-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[5].tags['tourism'] = 'hotel'
+
+        nodes[6] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.6, 47.5, 5, 3)
+        nodes[6].tags['tourism'] = 'hotel'
+
+        nodes[7] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.6, 5, 3)
+        nodes[7].tags['tourism'] = 'hotel'
+       
+        nodes[8] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 6, 3)
+        nodes[8].tags['tourism'] = 'hotel'
+
+        nodes[9] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 4)
+        nodes[9].tags['tourism'] = 'hotel'
+
+        nodes[10] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        nodes[10].tags['tourism'] = 'hotel1'
+
+        nodes[11] = OSM::Node.new(17, 'somebody', '2007-02-20T10:29:49+00:00', 8.5, 47.5, 5, 3)
+        
+        assert_equal nodes[0], nodes[1]
+        assert_not_equal nodes[0], nodes[2]
+        assert_not_equal nodes[0], nodes[3]
+        assert_not_equal nodes[0], nodes[4]
+        assert_not_equal nodes[0], nodes[5]
+        assert_not_equal nodes[0], nodes[6]
+        assert_not_equal nodes[0], nodes[7]
+        assert_not_equal nodes[0], nodes[8]
+        assert_not_equal nodes[0], nodes[9]
+        assert_not_equal nodes[0], nodes[10]
+        assert_not_equal nodes[0], nodes[11]
     end
 
     def test_init_id
