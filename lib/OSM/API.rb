@@ -85,10 +85,6 @@ module OSM
             get_object('node', id)
         end
 
-        def get_full_node(id)
-            get_full_object('node', id)
-        end
-
         # Get a way with specified ID from API.
         #
         # call-seq: get_node(id) -> OSM::Way
