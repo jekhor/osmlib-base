@@ -82,6 +82,18 @@ module OSM
             @tags = Tags.new
         end
 
+        def ==(obj)
+            equals = self.class == obj.class
+            return false unless equals
+
+            [:id, :version, :user, :uid, :action, :timestamp, :tags, :db, :type].each {|method|
+                equals &= self.send(method) == obj.send(method)
+                break unless equals
+            }
+
+            equals
+        end
+
         # Create an error when somebody tries to set the ID.
         # (We need this here because otherwise method_missing will be called.)
         def id=(id) # :nodoc:
@@ -302,6 +314,11 @@ module OSM
             super(id, user, timestamp, uid, version)
         end
 
+        def ==(node)
+            equals = super(node)
+            equals and self.lat == node.lat and self.lon == node.lon
+        end
+
         def type
             'node'
         end
@@ -413,6 +430,11 @@ module OSM
         def initialize(id=nil, user=nil, timestamp=nil, nodes=[], uid=-1, version=1)
             @nodes = nodes.collect{ |node| node.kind_of?(OSM::Node) ? node.id : node }
             super(id, user, timestamp, uid, version)
+        end
+
+        def ==(way)
+            return false unless super(way)
+            self.nodes == way.nodes
         end
 
         def type
@@ -562,6 +584,11 @@ module OSM
             super(id, user, timestamp, uid, version)
         end
 
+        def ==(relation)
+            return false unless super(relation)
+            self.members == relation.members
+        end
+
         def type
             'relation'
         end
@@ -686,6 +713,11 @@ module OSM
             @type = type
             @ref  = ref.to_i
             @role = role
+        end
+
+        def ==(obj)
+          return unless self.class == obj.class
+          self.role == obj.role and self.type == obj.type and self.ref == obj.ref
         end
 
         # Return XML for this way. This method uses the Builder library.
