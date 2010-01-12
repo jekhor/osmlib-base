@@ -1,5 +1,6 @@
 $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'objects')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'OSM', 'Database')
 require 'test/unit'
 require 'rexml/document'
 require 'rubygems'
