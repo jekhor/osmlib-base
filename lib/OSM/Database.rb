@@ -1,5 +1,6 @@
 # Contains the OSM::Database class.
 
+require 'rexml/document'
 require 'OSM/objects.rb'
 
 module OSM
@@ -151,6 +152,24 @@ module OSM
                 relations.each_value do |way|
                     way.to_xml(xml)
                 end
+            end
+        end
+
+        def to_rexml(doc, generator=@@DEFAULT_XML_GENERATOR)
+            osm = REXML::Element.new('osm')
+            osm.add_attributes('generator' => generator, 'version' => version)
+            doc << osm
+
+            nodes.each_value do |node|
+                node.to_rexml(osm)
+            end
+
+            ways.each_value do |way|
+                way.to_rexml(osm)
+            end
+
+            relations.each_value do |rel|
+                rel.to_rexml(osm)
             end
         end
     end

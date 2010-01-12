@@ -1,3 +1,6 @@
+
+require 'rexml/element'
+
 # Contains classes for OpenStreetMap objects: OSM::OSMObject
 # (virtual parent class), OSM::Node, OSM::Way, OSM::Relation, and OSM::Member
 
@@ -396,6 +399,15 @@ module OSM
             end
         end
 
+        def to_rexml(parent)
+            e = REXML::Element.new('node')
+            attributes.each_pair {|key, value|
+                e.add_attribute(key.to_s, value)
+            }
+            tags.to_rexml(e)
+            parent << e
+        end
+
         # Get all ways using this node from the API.
         #
         # The optional parameter is an OSM::API object. If none is specified
@@ -561,6 +573,20 @@ module OSM
             end
         end
 
+        def to_rexml(parent)
+            e = REXML::Element.new('way')
+            attributes.each_pair {|key, value|
+                e.add_attribute(key.to_s, value)
+            }
+            nodes.each {|node|
+                nd = REXML::Element.new('nd')
+                nd.add_attribute('ref', node)
+                e << nd
+            }
+            tags.to_rexml(e)
+            parent << e
+        end
+
     end
 
     # OpenStreetMap Relation.
@@ -686,6 +712,18 @@ module OSM
             end
         end
 
+        def to_rexml(parent)
+            e = REXML::Element.new('relation')
+            attributes.each_pair {|key, value|
+                e.add_attribute(key.to_s, value)
+            }
+            members.each {|member|
+                member.to_rexml(e)
+            }
+            tags.to_rexml(e)
+            parent << e
+        end
+
     end
 
     # A member of an OpenStreetMap Relation.
@@ -726,6 +764,12 @@ module OSM
             xml.member(:type => type, :ref => ref, :role => role)
         end
 
+        def to_rexml(parent)
+            e = REXML::Element.new('member')
+            e.add_attributes('type' => type, 'ref' => ref, 'role' => role)
+            parent << e
+        end
+
     end
 
     # A collection of OSM tags which can be attached to a Node, Way,
@@ -738,6 +782,14 @@ module OSM
         def to_xml(xml)
             each do |key, value|
                 xml.tag(:k => key, :v => value)
+            end
+        end
+
+        def to_rexml(parent)
+            each do |key, value|
+                e = REXML::Element.new('tag')
+                e.add_attributes('k'  => key, 'v' => value)
+                parent << e
             end
         end
 
